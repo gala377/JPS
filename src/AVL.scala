@@ -8,7 +8,7 @@ class AVL[T] {
   }
 
 
-  private val root: Option[Node] = None
+
 
   def depth(): Int = {
     root match {
@@ -18,7 +18,7 @@ class AVL[T] {
   }
 
   private def subtree_depth(node: Node): Int = {
-    
+
   }
 
 }
