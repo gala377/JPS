@@ -61,8 +61,9 @@ class AVL[T](root: Option[Node[T]]) {
               if (height(l_node.left) >= height(l_node.right))
                 rotateRight(Some(new_node))
               else {
-                val rotated = rotateLeft(Some(new_node))
-                rotateRight(rotated)
+                // Changed here
+                val rotated = Node(new_node.value, rotateLeft(new_node.left), new_node.right)
+                rotateRight(Some(rotated))
               }
             }
           }
@@ -73,8 +74,9 @@ class AVL[T](root: Option[Node[T]]) {
               if (height(r_node.right) >= height(r_node.left))
                 rotateLeft(Some(new_node))
               else {
-                val rotated = rotateRight(Some(new_node))
-                rotateLeft(rotated)
+                // Changed here
+                val rotated = Node(new_node.value, new_node.left, rotateRight(new_node.right))
+                rotateLeft(Some(rotated))
               }
             }
           }
@@ -122,7 +124,8 @@ class AVL[T](root: Option[Node[T]]) {
   }
 
   def remove(value: T)(implicit ordering: Ordering[T]): AVL[T] = {
-    new AVL[T](remove(value, root)).rebalance()
+    val tree = new AVL[T](remove(value, root))
+    tree.rebalance()
   }
 
   private def remove(value: T, node: Option[Node[T]])(implicit ordering: Ordering[T]): Option[Node[T]] = node match {
@@ -136,7 +139,11 @@ class AVL[T](root: Option[Node[T]]) {
             case Node(_, None, None) => None
             case Node(_, None, Some(_)) => right
             case Node(_, Some(_), None) => left
-            case Node(_, Some(_), Some(_)) => mergeNodes(left, right)
+            case Node(_, Some(_), Some(_)) =>{
+              val min_right_val = min(right)
+              val temp = remove(min_right_val, right)
+              Some(Node(min_right_val, left, temp))
+            }
           }
         }
         case -1 => Some(Node(node_val, remove(value, left), right))
